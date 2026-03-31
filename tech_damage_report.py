@@ -749,8 +749,12 @@ def detect_trace_bend_zones(fibers_a, ribbon_size, bend_threshold,
                     bend_positions[round(avg_km, 1)] += 1
 
     # Build candidate bend columns from consensus positions
+    # Filter out positions outside the valid span range (artifacts from
+    # pre-trigger or noise-floor regions)
     bend_columns = []
     for km_bin in sorted(bend_positions.keys()):
+        if span_km and (km_bin < 0 or km_bin > span_km):
+            continue
         bend_columns.append({
             'position_km': km_bin,
             'count':       bend_positions[km_bin],
